@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Libstore</title>
+    <style>
+        h1 {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%);
+        }
+        input {
+            position: absolute;
+            top: 11.3%;
+            left: 43%;
+            transform: translate(-11.3%, -43%);
+        }
+        input[type=text] {
+            padding: 10px;
+            border-radius: 25px 25px 25px 25px;
+        }
+        input[type=text]::placeholder {
+            color: grey;
+        }
+        button {
+            width: 120px;
+            height: 40px;
+            background-color: #004fff;
+            border: none;
+            color: white;
+            box-shadow: 0 4px 16px rgba(0, 79, 255, 0.3);
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 20px;
+            position: absolute;
+            top: 11.5%;
+            left: 53%;
+            transform: translate(-11.5%, -53%);
+            transition: 0.3s;
+        }
+
+        button:focus {
+            outline: 0;
+        }
+
+        button:hover {
+            background-color: rgba(0, 79, 255, 0.9);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 79, 255, 0.6);
+        }
+    </style>
+</head>
+ 
+<body>
+    <h1>Libstore</h1>
+    <input type="text" placeholder="검색어를 입력하세요" id="query">
+    <button id="search">검색</button>
+ 
+    <div></div>
+ 
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+ 
+    <script>
+        $(document).ready(function () {
+            var pageNum = 1;
+ 
+            $("#search").click(function () {
+                $("div").html("");
+ 
+                $.ajax({
+                    method: "GET",
+                    url: "https://dapi.kakao.com/v3/search/book?target=title",
+                    data: { query: $("#query").val(), page: pageNum},
+                    headers: {Authorization: "KakaoAK c7abf0f96cd71c3154074e9611b93d75"}
+ 
+                })
+                .done(function (msg) {
+                    console.log(msg);
+                    for (var i = 0; i < 10; i++){
+                            $("div").append("<h2><a href='"+ msg.documents[i].url +"'>" + msg.documents[i].title + "</a></h2>");
+                            $("div").append("<img src='" + msg.documents[i].thumbnail + "'/>");
+                            $("div").append("<int>" + msg.documents[i].sale_price + "</int>" + "원<br>");
+                    }
+                });
+            })
+ 
+            $(window).scroll(function(){  
+ 
+                if ( Math.ceil($(window).scrollTop()) + $(window).height() >= $(document).height() ){
+                    pageNum++;
+ 
+ 
+                    $.ajax({
+                        method: "GET",
+                        url: "https://dapi.kakao.com/v3/search/book?target=title",
+                        data: { query: $("#query").val(),  page: pageNum},
+                        headers: {Authorization: "KakaoAK c7abf0f96cd71c3154074e9611b93d75"}
+ 
+                    })
+                    .done(function (msg) {
+                        console.log(msg);
+                        for (var i = 0; i < 10; i++){
+                            $("div").append("<h2><a href='"+ msg.documents[i].url +"'>" + msg.documents[i].title + "</a></h2>");
+                            $("div").append("<img src='" + msg.documents[i].thumbnail + "'/>");
+                            $("div").append("<int>" + msg.documents[i].sale_price + "</int>" + "원<br>");
+                        }
+                    });
+ 
+                }
+                
+            });
+        })
+ 
+        
+    </script>
+</body>
+ 
+</html>
